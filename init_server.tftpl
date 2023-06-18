@@ -24,7 +24,11 @@ runcmd:
   - sed -i "s/#Port 22/Port 2222/" /etc/ssh/sshd_config
   - service ssh restart
   - curl -o bootstrap-salt.sh -L https://bootstrap.saltproject.io
-  - sh bootstrap-salt.sh
+  %{ if is_bastion ~}
+  - sh bootstrap-salt.sh -i ${minion_id} -M
+%{ else ~}
+  - sh bootstrap-salt.sh -i ${minion_id}
+%{ endif ~}
   - 'sed -i "s/#master: salt/master: 10.0.0.2/" /etc/salt/minion'
   - service salt-minion restart
   - mkdir -p /etc/apt/keyrings
