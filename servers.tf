@@ -16,7 +16,6 @@ resource "hcloud_server" "servers" {
   user_data = templatefile("init_server.tftpl", {
     server_timezone = var.server_timezone
     server_locale   = var.server_locale
-    minion_id       = each.value.name
     cluster_name    = var.cluster_name
     cluster_user    = var.cluster_user
     public_ssh_key  = var.my_public_ssh_key
