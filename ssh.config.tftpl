@@ -1,9 +1,9 @@
 Host ${cluster_name}
-    HostName ${manager_ip}
+    HostName ${bastion_ip}
     User ${cluster_user}
     Port ${ssh_port}
 
-%{ for s in workers ~}
+%{ for s in servers ~}
 Host ${cluster_name}-${s.name}
     HostName ${s.ip}
     HostKeyAlias ${cluster_name}-${s.name}

@@ -45,7 +45,7 @@ runcmd:
 %{ else ~}
   - sh bootstrap-salt.sh -i ${minion_id}
 %{ endif ~}
-  - 'sed -i "s/#master: salt/master: 10.0.0.2/" /etc/salt/minion'
+  - 'sed -i "s/#master: salt/master: ${bastion_ip}/" /etc/salt/minion'
   - service salt-minion restart
   - mkdir -p /etc/apt/keyrings
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg

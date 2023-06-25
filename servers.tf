@@ -19,7 +19,8 @@ resource "hcloud_server" "servers" {
     server_packages = var.server_packages
     ssh_port        = var.ssh_port
     minion_id       = each.value.name
-    is_bastion      = each.value.name == "manager"
+    bastion_ip      = local.bastion_server.ip
+    is_bastion      = each.value.name == local.bastion_server_name
     cluster_name    = var.cluster_name
     cluster_user    = var.cluster_user
     public_ssh_key  = var.my_public_ssh_key

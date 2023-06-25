@@ -3,9 +3,9 @@ output "servers" {
   description = "List of servers"
 }
 
-output "manager_ip" {
-  value       = hcloud_server.servers["manager"].ipv4_address
-  description = "Public ip address of the swarm manager"
+output "bastion_ip" {
+  value       = local.bastion_ip
+  description = "Public ip address of the bastion server"
 }
 
 output "lb_id" {
@@ -24,7 +24,7 @@ output "ssh_config" {
     cluster_name = var.cluster_name
     cluster_user = var.cluster_user
     ssh_port     = var.ssh_port
-    manager_ip   = hcloud_server.servers["manager"].ipv4_address
-    workers      = [for s in local.servers : s if s.name != "manager"]
+    bastion_ip   = local.bastion_ip
+    servers      = local.servers
   })
 }

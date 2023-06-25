@@ -38,12 +38,14 @@ module "hcloud_swarm" {
   my_public_ssh_key = "ssh-ed25519 xxxxxx"
   my_ip_addresses = ["0.0.0.0/0", "::/0"]
 
-  manager_server_type = "cx21"
+  managers_server_type = "cx21"
+  managers_count       = 1
 
   workers_server_type = "cx21"
   workers_count       = 2
 
-  lb_type = "lb11"
+  lb_type   = "lb11"
+  lb_target = "manager"
 }
 
 resource "hcloud_load_balancer_service" "http_service" {

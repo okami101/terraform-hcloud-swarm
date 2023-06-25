@@ -61,9 +61,14 @@ variable "my_ip_addresses" {
   description = "Your public IP addresses for port whitelist via the Hetzner firewall configuration"
 }
 
-variable "manager_server_type" {
+variable "managers_server_type" {
   type        = string
   description = "Type of server for the swarm manager"
+}
+
+variable "managers_count" {
+  type        = number
+  description = "Number of swarm managers"
 }
 
 variable "workers_server_type" {
@@ -78,5 +83,10 @@ variable "workers_count" {
 
 variable "lb_type" {
   description = "Server type of load balancer"
+  type        = string
+}
+
+variable "lb_target" {
+  description = "Choose manager or workers as target of load balancer"
   type        = string
 }
