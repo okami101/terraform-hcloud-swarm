@@ -11,7 +11,7 @@ docker network create -d overlay --ingress --opt com.docker.network.driver.mtu=1
 Connect to socket
 
 ```sh
-docker context create --docker host=ssh://swarm --description="Okami101 Swarm cluster" okami101-swarm
+docker context create --docker host=ssh://swarm --description="My Swarm cluster" my-swarm-cluster
 ```
 
 ## :memo: License
