@@ -1,0 +1,14 @@
+Host ${cluster_name}
+    HostName ${manager_ip}
+    User ${cluster_user}
+    Port ${ssh_port}
+
+%{ for s in workers ~}
+Host ${cluster_name}-${s.name}
+    HostName ${s.ip}
+    HostKeyAlias ${cluster_name}-${s.name}
+    User ${cluster_user}
+    Port ${ssh_port}
+    ProxyJump ${cluster_name}
+
+%{ endfor ~}

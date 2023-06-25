@@ -8,16 +8,18 @@ resource "hcloud_server" "servers" {
     hcloud_firewall.firewall_ssh.id
   ]
   ssh_keys = [
-    var.my_public_ssh_name
+    var.cluster_user
   ]
   depends_on = [
     hcloud_network_subnet.network_subnet
   ]
-  user_data = templatefile("init_server.tftpl", {
+  user_data = templatefile("${path.module}/cloud-init.tftpl", {
     server_timezone = var.server_timezone
     server_locale   = var.server_locale
+    server_packages = var.server_packages
+    ssh_port        = var.ssh_port
     minion_id       = each.value.name
-    is_bastion      = each.value.ip == "10.0.0.2"
+    is_bastion      = each.value.name == "manager"
     cluster_name    = var.cluster_name
     cluster_user    = var.cluster_user
     public_ssh_key  = var.my_public_ssh_key
@@ -29,9 +31,11 @@ resource "hcloud_server" "servers" {
       ssh_keys
     ]
   }
+}
 
-  network {
-    network_id = hcloud_network.network.id
-    ip         = each.value.ip
-  }
+resource "hcloud_server_network" "servers" {
+  for_each   = { for i, s in local.servers : s.name => s }
+  server_id  = hcloud_server.servers[each.value.name].id
+  network_id = hcloud_network.network.id
+  ip         = each.value.ip
 }

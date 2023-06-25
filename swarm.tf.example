@@ -1,0 +1,74 @@
+terraform {
+  required_providers {
+    hcloud = {
+      source = "hetznercloud/hcloud"
+    }
+  }
+
+  backend "kubernetes" {
+    secret_suffix = "cloud"
+  }
+}
+
+provider "hcloud" {
+  # Here is the required hcloud API token with RW access in order to create all needed resources.
+  token = "xxxxxx"
+}
+
+module "hcloud_swarm" {
+  providers = {
+    hcloud = hcloud
+  }
+
+  # Next all self-explanatory variables that you can customized. See https://registry.terraform.io/modules/okami101/swarm/hcloud/latest?tab=inputs for description.
+
+  source = "okami101/swarm/hcloud"
+
+  server_image    = "ubuntu-22.04"
+  server_location = "nbg1"
+  server_timezone = "Europe/Paris"
+  server_locale   = "fr_FR.UTF-8"
+  server_packages = ["nfs-common"]
+
+  ssh_port = 2222
+
+  cluster_name = "swarm"
+  cluster_user = "okami"
+
+  my_public_ssh_key = "ssh-ed25519 xxxxxx"
+  my_ip_addresses = ["0.0.0.0/0", "::/0"]
+
+  manager_server_type = "cx21"
+
+  workers_server_type = "cx21"
+  workers_count       = 2
+
+  lb_type = "lb11"
+}
+
+resource "hcloud_load_balancer_service" "http_service" {
+  load_balancer_id = module.hcloud_swarm.lb_id
+  protocol         = "tcp"
+  listen_port      = 80
+  destination_port = 80
+}
+
+resource "hcloud_load_balancer_service" "https_service" {
+  load_balancer_id = module.hcloud_swarm.lb_id
+  protocol         = "tcp"
+  listen_port      = 443
+  destination_port = 443
+  proxyprotocol    = true
+}
+
+output "manager_ip" {
+  value = module.hcloud_swarm.manager_ip
+}
+
+output "lb_ip" {
+  value = module.hcloud_swarm.lb_ip
+}
+
+output "ssh_config" {
+  value = module.hcloud_swarm.ssh_config
+}

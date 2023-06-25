@@ -18,10 +18,15 @@ package_reboot_if_required: true
 manage_etc_hosts: false
 
 packages:
-  - nfs-common
+%{ for package in server_packages ~}
+  - ${package}
+%{ endfor ~}
 
 runcmd:
-  - sed -i "s/#Port 22/Port 2222/" /etc/ssh/sshd_config
+%{ if ssh_port != null ~}
+  - sed -i "/^#Port/s/^.*$/Port ${ssh_port}/" /etc/ssh/sshd_config
+%{ endif ~}
+  - sed -i "/^PermitRootLogin/s/^.*$/PermitRootLogin no/" /etc/ssh/sshd_config
   - service ssh restart
   - curl -o bootstrap-salt.sh -L https://bootstrap.saltproject.io
   %{ if is_bastion ~}
