@@ -8,6 +8,12 @@ docker network rm ingress
 docker network create -d overlay --ingress --opt com.docker.network.driver.mtu=1450 ingress
 ```
 
+Connect to socket
+
+```sh
+docker context create --docker host=ssh://swarm --description="Okami101 Swarm cluster" okami101-swarm
+```
+
 ## :memo: License
 
 This project is under license from MIT. For more details, see the [LICENSE](https://adr1enbe4udou1n.mit-license.org/) file.
