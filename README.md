@@ -2,7 +2,11 @@
 
 ## :dart: About
 
-TODO
+```sh
+docker swarm init --advertise-addr 10.0.0.2
+docker network rm ingress
+docker network create -d overlay --ingress --opt com.docker.network.driver.mtu=1450 ingress
+```
 
 ## :memo: License
 

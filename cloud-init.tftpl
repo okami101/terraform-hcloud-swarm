@@ -17,6 +17,17 @@ package_upgrade: true
 package_reboot_if_required: true
 manage_etc_hosts: false
 
+write_files:
+- content: |
+    {
+      "default-network-opts": {
+        "overlay": {
+          "com.docker.network.driver.mtu": "1450"
+        }
+      }
+    }
+  path: /etc/docker/daemon.json
+
 packages:
 %{ for package in server_packages ~}
   - ${package}
