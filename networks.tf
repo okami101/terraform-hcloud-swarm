@@ -10,8 +10,12 @@ resource "hcloud_network_subnet" "network_subnet" {
   ip_range     = "10.0.0.0/16"
 }
 
-resource "hcloud_firewall" "firewall_ssh" {
-  name = "firewall-ssh"
+resource "hcloud_firewall" "firewall_private" {
+  name = "firewall-private"
+}
+
+resource "hcloud_firewall" "firewall_bastion" {
+  name = "firewall-bastion"
   rule {
     direction  = "in"
     port       = "2222"

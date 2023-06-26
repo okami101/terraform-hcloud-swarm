@@ -4,9 +4,10 @@ resource "hcloud_server" "servers" {
   image       = var.server_image
   location    = var.server_location
   server_type = each.value.server_type
-  firewall_ids = [
-    hcloud_firewall.firewall_ssh.id
-  ]
+  firewall_ids = concat(
+    [hcloud_firewall.firewall_private.id],
+    each.value.name == local.bastion_server_name ? [hcloud_firewall.firewall_bastion.id] : []
+  )
   ssh_keys = [
     var.cluster_user
   ]

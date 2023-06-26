@@ -28,24 +28,36 @@ module "hcloud_swarm" {
   server_location = "nbg1"
   server_timezone = "Europe/Paris"
   server_locale   = "fr_FR.UTF-8"
+  
+  # Install nfs-common in order for any NFS server to attach to workers.
   server_packages = ["nfs-common"]
 
+  # Use preferably something different than default 22.
   ssh_port = 2222
 
+  # All hostname will use it as a prefix, aka <cluster_name>-worker-01, etc.
   cluster_name = "swarm"
-  cluster_user = "okami"
+  # The unix user for ssh login.
+  cluster_user = "swarm"
 
+  # Your required public ssh key for ssh access through all nodes.
   my_public_ssh_key = "ssh-ed25519 xxxxxx"
+  # Put your fixed public ip here, heavily recommended for protecting ssh and kube server api port access on bastion server, default to any.
   my_ip_addresses = ["0.0.0.0/0", "::/0"]
 
+  # Swarm managers configuration
   managers_server_type = "cx21"
+  # Use an odd number
   managers_count       = 1
 
+  # Swarm workers configuration
   workers_server_type = "cx21"
   workers_count       = 2
 
+  # The type of load balancer.
   lb_type   = "lb11"
-  lb_target = "manager"
+  # The node role to be load balanced. Can be manager or worker. These nodes should have a proper ingress controller installed, as traefik. If worker, traefik has to have access to docker API of managers in order to work. You can use a simple socket proxy solution as Socat.
+  lb_target = "worker"
 }
 
 resource "hcloud_load_balancer_service" "http_service" {
