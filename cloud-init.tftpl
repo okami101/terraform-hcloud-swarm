@@ -58,6 +58,4 @@ runcmd:
   - usermod -aG docker ${cluster_user}
 %{ if is_bastion ~}
   - docker swarm init --advertise-addr ${bastion_ip}
-  - docker network rm ingress
-  - docker network create -d overlay --ingress --opt com.docker.network.driver.mtu=1450 ingress
 %{ endif ~}
