@@ -3,6 +3,16 @@ output "servers" {
   description = "List of servers"
 }
 
+output "network_id" {
+  value       = hcloud_network.network.id
+  description = "ID of the private firewall"
+}
+
+output "firewall_private_id" {
+  value       = hcloud_firewall.firewall_private.id
+  description = "ID of the private firewall"
+}
+
 output "bastion_ip" {
   value       = local.bastion_ip
   description = "Public ip address of the bastion server"
