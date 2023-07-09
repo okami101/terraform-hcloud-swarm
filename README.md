@@ -186,7 +186,7 @@ app-02 --> DB
 Pros :
 
 * A balanced cheap while performant option
-* Horizontal scalability
+* Horizontal scalability excluding Traefik
 * Workload mostly separated from manager, securing the cluster from congestion
 
 Cons :
@@ -289,7 +289,7 @@ Pros :
 * Load Balancer takes care of SSL
 * Zero downtime achievable
 * Horizontal scalability
-* Free to add any managers or workers easily
+* Free to add workers easily
 * Workload clearly separated from manager, securing the cluster
 * The topology used in Kubernetes world
 
@@ -352,6 +352,7 @@ app-03 --> DB
 Pros :
 
 * The most well-balanced HA solution and rock solid Docker Swarm cluster
+* Free to add managers and workers easily
 * Complete HA for managers and workers
 * Full horizontal scalability
 
