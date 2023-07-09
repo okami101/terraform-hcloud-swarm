@@ -239,12 +239,12 @@ Pros :
 
 * The cheapest HA solution
 * Load Balancer takes care of SSL
-* No downtime achievable
+* Zero downtime achievable
 
 Cons :
 
 * Need at least 3 managers or any superior odd number (7 max) in order to maintain quorum
-* No complete horizontal scalability
+* Limited horizontal scalability
 * Risk of unresponsive swarm cluster if high load
 
 ### 1 manager + X workers + LB
@@ -287,7 +287,7 @@ app-02 --> DB
 Pros :
 
 * Load Balancer takes care of SSL
-* No downtime achievable
+* Zero downtime achievable
 * Horizontal scalability
 * Free to add any managers or workers easily
 * Workload clearly separated from manager, securing the cluster
