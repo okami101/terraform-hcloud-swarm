@@ -187,7 +187,7 @@ Pros :
 
 * A balanced cheap while performant option
 * Horizontal scalability
-* Workload clearly separated from manager, securing the cluster
+* Workload clearly separated from manager, securing the cluster from congestion
 
 Cons :
 
