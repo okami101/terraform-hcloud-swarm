@@ -142,14 +142,15 @@ app-02 --> DB
 
 Pros :
 
-* The cheapest and dead simple solution
+* The cheapest and dead simplest solution
 * Blue green deployment always possible thanks to Docker and Traefik combination
 * No swarm needed, use directly docker-compose
 
 Cons :
 
 * No HA, mandatory downtime for maintenance
-* No horizontal scalability
+* No horizontal scalability, only vertical
+* All resources constrained to 1 single node, high SRP violation
 * Need SSL management for Traefik
 * Server exposed to public internet
 
@@ -184,7 +185,7 @@ app-02 --> DB
 
 Pros :
 
-* The best balanced cheap and performance option
+* A balanced cheap while performant option
 * Horizontal scalability
 * Workload clearly separated from manager, securing the cluster
 
@@ -192,6 +193,7 @@ Cons :
 
 * No HA, mandatory downtime for manager maintenance
 * Need SSL management for Traefik
+* When high load, Traefik can be a bottleneck
 * Cluster exposed to public internet
 
 ### X managers
