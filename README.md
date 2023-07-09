@@ -351,10 +351,9 @@ app-03 --> DB
 
 Pros :
 
-* The most well-balanced HA solution and rock solid Docker Swarm cluster
+* The most robust HA solution for managers and workers
 * Free to add managers and workers easily
-* Complete HA for managers and workers
-* Full horizontal scalability
+* Full horizontal scalability for managers and workers
 
 Cons :
 
