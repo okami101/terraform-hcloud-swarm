@@ -109,6 +109,254 @@ You can easily add or remove nodes by changing the `count` variable of each work
 
 * When adding, the new manager or worker node will be automatically created, but you still need to join it to the cluster by using above related command. Don't also forget to accept the new minion with `sudo salt-key -A`.
 
+## Topologies
+
+Contrary to Kubernetes which is really suited for a specific kind of topology (HA in front of workers), Docker is highly flexible and give you many ways to build your cluster for any needs. Here are some examples of topologies you can use with this Terraform template.
+
+> I'm using here Traefik (not included) which is the perfect reverse proxy for route detection through Docker API.
+
+### Docker compose
+
+```tf
+# ...
+managers_count = 1
+workers_count  = 0
+# ...
+```
+
+```mermaid
+flowchart TD
+client((Client))
+client -- Port 80 + 443 --> traefik-01
+subgraph manager-01
+  traefik-01{Traefik SSL}
+  app-01([My App replica 1])
+  app-02([My App replica 2])
+  traefik-01 --> app-01
+  traefik-01 --> app-02
+end
+DB[(My App DB)]
+app-01 --> DB
+app-02 --> DB
+```
+
+Pros :
+
+* The cheapest and dead simple solution
+* Blue green deployment always possible thanks to Docker and Traefik combination
+* No swarm needed, use directly docker-compose
+
+Cons :
+
+* No HA, mandatory downtime for maintenance
+* No horizontal scalability
+* Need SSL management for Traefik
+* Server exposed to public internet
+
+### 1 manager + X workers
+
+```tf
+# ...
+managers_count = 1
+workers_count  = 2
+# ...
+```
+
+```mermaid
+flowchart TD
+client((Client))
+client -- Port 80 + 443 --> traefik-01
+subgraph manager-01
+  traefik-01{Traefik SSL}
+end
+subgraph worker-01
+  app-01([My App replica 1])
+  traefik-01 --> app-01
+end
+subgraph worker-02
+  app-02([My App replica 2])
+  traefik-01 --> app-02
+end
+DB[(My App DB)]
+app-01 --> DB
+app-02 --> DB
+```
+
+Pros :
+
+* The best balanced cheap and performance option
+* Horizontal scalability
+* Workload clearly separated from manager, securing the cluster
+
+Cons :
+
+* No HA, mandatory downtime for manager maintenance
+* Need SSL management for Traefik
+* Cluster exposed to public internet
+
+### X managers
+
+```tf
+# ...
+managers_count = 3
+workers_count  = 0
+lb_target = "manager"
+# ...
+```
+
+```mermaid
+flowchart TD
+client((Client))
+client -- Port 80 + 443 --> lb{LB}
+lb{LB}
+subgraph manager-01
+  traefik-01{Traefik}
+  app-01([My App replica 1])
+  traefik-01 --> app-01
+end
+subgraph manager-02
+  traefik-02{Traefik}
+  app-02([My App replica 2])
+  traefik-02 --> app-02
+end
+subgraph manager-03
+  traefik-03{Traefik}
+  app-03([My App replica 3])
+  traefik-03 --> app-03
+end
+lb -- Port 80 --> traefik-01
+lb -- Port 80 --> traefik-02
+lb -- Port 80 --> traefik-03
+DB[(My App DB)]
+app-01 --> DB
+app-02 --> DB
+app-03 --> DB
+```
+
+Pros :
+
+* The cheapest HA solution
+* Load Balancer takes care of SSL
+* No downtime achievable
+
+Cons :
+
+* Need at least 3 managers or any superior odd number (7 max) in order to maintain quorum
+* No complete horizontal scalability
+* Risk of unresponsive swarm cluster if high load
+
+### 1 manager + X workers + LB
+
+```tf
+# ...
+managers_count = 1
+workers_count  = 2
+lb_target = "worker"
+# ...
+```
+
+```mermaid
+flowchart TD
+client((Client))
+client -- Port 80 + 443 --> lb{LB}
+lb{LB}
+subgraph manager-01
+  overlay[Docker API + overlay network]
+end
+subgraph worker-01
+  traefik-01{Traefik}
+  app-01([My App replica 1])
+end
+subgraph worker-02
+  traefik-02{Traefik}
+  app-02([My App replica 2])
+end
+traefik-01 --> overlay
+traefik-02 --> overlay
+overlay --> app-01
+overlay --> app-02
+lb -- Port 80 --> traefik-01
+lb -- Port 80 --> traefik-02
+DB[(My App DB)]
+app-01 --> DB
+app-02 --> DB
+```
+
+Pros :
+
+* Load Balancer takes care of SSL
+* No downtime achievable
+* Horizontal scalability
+* Free to add any managers or workers easily
+* Workload clearly separated from manager, securing the cluster
+* The topology used in Kubernetes world
+
+Cons :
+
+* A little more expensive
+* No HA for manager
+* In order to work, Traefik must be configured for using manager docker API endpoint, otherwise it will not be able to detect newly added services. You can use Socat as simple socket proxy for this purpose.
+* If more than 1 manager, you way prefer next topology, which moves Traefik to managers.
+
+### X managers + Y workers + LB
+
+```tf
+# ...
+managers_count = 3
+workers_count  = 3
+lb_target = "manager"
+# ...
+```
+
+```mermaid
+flowchart TD
+client((Client))
+client -- Port 80 + 443 --> lb{LB}
+lb{LB}
+subgraph manager-01
+  traefik-01{Traefik}
+end
+subgraph manager-02
+  traefik-02{Traefik}
+end
+subgraph manager-03
+  traefik-03{Traefik}
+end
+subgraph worker-01
+  app-01([My App replica 1])
+end
+subgraph worker-02
+  app-02([My App replica 2])
+end
+subgraph worker-03
+  app-03([My App replica 3])
+end
+overlay(Docker overlay network)
+traefik-01 --> overlay
+traefik-02 --> overlay
+traefik-03 --> overlay
+overlay --> app-01
+overlay --> app-02
+overlay --> app-03
+lb -- Port 80 --> traefik-01
+lb -- Port 80 --> traefik-02
+lb -- Port 80 --> traefik-03
+DB[(My App DB)]
+app-01 --> DB
+app-02 --> DB
+app-03 --> DB
+```
+
+Pros :
+
+* The most well-balanced HA solution and rock solid Docker Swarm cluster
+* Complete HA for managers and workers
+* Full horizontal scalability
+
+Cons :
+
+* The most expensive solution
+
 ## 📝 License
 
 This project is under license from MIT. For more details, see the [LICENSE](https://adr1enbe4udou1n.mit-license.org/) file.
