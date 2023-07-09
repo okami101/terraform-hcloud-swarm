@@ -196,7 +196,7 @@ Cons :
 * When high load, Traefik can be a bottleneck
 * Cluster exposed to public internet
 
-### X managers
+### X managers + LB
 
 ```tf
 # ...
@@ -290,7 +290,7 @@ Pros :
 * Zero downtime achievable
 * Horizontal scalability
 * Free to add workers easily
-* Workload clearly separated from manager, securing the cluster
+* Workload clearly separated from manager, no congestion risk in managers
 * The topology used in Kubernetes world
 
 Cons :
@@ -358,6 +358,16 @@ Pros :
 Cons :
 
 * The most expensive solution
+
+### Topologies Summary
+
+| Topology                    | HA  | Horizontal scalability | Cost | Workload repartition |
+| --------------------------- | --- | ---------------------- | ---- | -------------------- |
+| Docker compose              | -   | -                      | -    | -                    |
+| 1 manager + X workers       | +   | ++                     | +    | ++                   |
+| X managers + LB             | ++  | +                      | ++   | +                    |
+| 1 manager + X workers + LB  | ++  | ++                     | ++   | +++                  |
+| X managers + Y workers + LB | +++ | +++                    | +++  | +++                  |
 
 ## 📝 License
 
