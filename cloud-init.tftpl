@@ -4,7 +4,9 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     ssh_authorized_keys:
-      - ${public_ssh_key}
+%{ for key in public_ssh_keys ~}
+      - ${key}
+%{ endfor ~}
 
 %{ if server_timezone != null ~}
 timezone: ${server_timezone}

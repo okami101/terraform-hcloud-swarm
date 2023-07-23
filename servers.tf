@@ -8,9 +8,7 @@ resource "hcloud_server" "servers" {
     [hcloud_firewall.firewall_private.id],
     each.value.name == local.bastion_server_name ? [hcloud_firewall.firewall_bastion.id] : []
   )
-  ssh_keys = [
-    var.cluster_user
-  ]
+  ssh_keys = var.my_ssh_key_names
   depends_on = [
     hcloud_network_subnet.network_subnet
   ]
@@ -24,7 +22,7 @@ resource "hcloud_server" "servers" {
     is_bastion      = each.value.name == local.bastion_server_name
     cluster_name    = var.cluster_name
     cluster_user    = var.cluster_user
-    public_ssh_key  = var.my_public_ssh_key
+    public_ssh_keys = var.my_public_ssh_keys
   })
 
   lifecycle {

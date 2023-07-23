@@ -46,10 +46,15 @@ variable "cluster_user" {
   description = "The default non-root user (UID=1000) that will be used to access the servers"
 }
 
-variable "my_public_ssh_key" {
-  type        = string
+variable "my_ssh_key_names" {
+  description = "List of hcloud SSH key names that will be used to access the servers"
+  type        = list(string)
+}
+
+variable "my_public_ssh_keys" {
+  description = "Your public SSH keys that will be used to access the servers"
+  type        = list(string)
   sensitive   = true
-  description = "Your public SSH key that will be used to access the servers"
 }
 
 variable "my_ip_addresses" {

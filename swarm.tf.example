@@ -15,6 +15,11 @@ provider "hcloud" {
   token = "xxxxxx"
 }
 
+resource "hcloud_ssh_key" "default" {
+  name       = "john"
+  public_key = "ssh-ed25519 xxxxxx"
+}
+
 module "hcloud_swarm" {
   providers = {
     hcloud = hcloud
@@ -40,8 +45,10 @@ module "hcloud_swarm" {
   # The unix user for ssh login.
   cluster_user = "swarm"
 
+  # The above hcloud ssh key names for adding them when creating nodes.
+  my_ssh_key_names   = [hcloud_ssh_key.default.name]
   # Your required public ssh key for ssh access through all nodes.
-  my_public_ssh_key = "ssh-ed25519 xxxxxx"
+  my_public_ssh_keys = [hcloud_ssh_key.default.public_key]
   # Put your fixed public ip here, heavily recommended for protecting ssh and kube server api port access on bastion server, default to any.
   my_ip_addresses = ["0.0.0.0/0", "::/0"]
 
