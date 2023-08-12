@@ -85,15 +85,3 @@ variable "workers_count" {
   type        = number
   description = "Number of swarm workers"
 }
-
-variable "lb_type" {
-  description = "Server type of load balancer"
-  default     = null
-  type        = string
-}
-
-variable "lb_target" {
-  description = "Choose manager or workers as target of load balancer"
-  default     = null
-  type        = string
-}
