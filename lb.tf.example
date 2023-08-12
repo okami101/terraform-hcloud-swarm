@@ -10,12 +10,12 @@ resource "hcloud_load_balancer" "public" {
 
 resource "hcloud_load_balancer_network" "public" {
   load_balancer_id = hcloud_load_balancer.public.id
-  network_id       = module.hcloud_k3s.network_id
+  network_id       = module.hcloud_swarm.network_id
   ip               = "10.0.0.100"
 }
 
 resource "hcloud_load_balancer_target" "public" {
-  for_each         = { for i, t in module.hcloud_k3s.worker_ids.worker : t => i }
+  for_each         = { for i, t in module.hcloud_swarm.worker_ids : t => i }
   type             = "server"
   load_balancer_id = hcloud_load_balancer.public.id
   server_id        = each.key
@@ -92,12 +92,12 @@ resource "hcloud_load_balancer" "controller" {
 
 resource "hcloud_load_balancer_network" "controller" {
   load_balancer_id = hcloud_load_balancer.controller.id
-  network_id       = module.hcloud_k3s.network_id
+  network_id       = module.hcloud_swarm.network_id
   ip               = "10.0.0.200"
 }
 
 resource "hcloud_load_balancer_target" "controller" {
-  for_each         = { for i, t in module.hcloud_k3s.controller_ids : t => i }
+  for_each         = { for i, t in module.hcloud_swarm.manager_ids : t => i }
   type             = "server"
   load_balancer_id = hcloud_load_balancer.controller.id
   server_id        = each.key

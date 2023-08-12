@@ -14,7 +14,11 @@ Check [K3S provider](https://github.com/okami101/terraform-hcloud-k3s) for a ful
 
 All nodes including LB will be linked with a proper private network as well as **solid firewall protection**. For admin management, only the 1st main manager (bastion) node will have open port only for SSH (configurable), with **IP whitelist** support. Other internal nodes will be accessed by SSH Jump.
 
-Hetzner Load Balancer (optional) can be used for any external public access to your cluster. You have 2 options for LB :
+### Load Balancer
+
+Hetzner Load Balancer can be used for any external public access to your cluster. Note as this functionality is not directly included in this provider in order to allow maximum flexibility. Check `lb.tf.example` for complete example.
+
+You may have 2 options for LB :
 
 * Put it front of **managers**, so you need at least 3 managers for HA support (odd number mandatory for quorum)
 * Put it front of **workers**, so you need at least 2 workers for HA support. In this case, 1 single manager is required which is the far HA cheaper option.
@@ -62,13 +66,7 @@ Now it's time for initial cluster setup.
 
 ### Access
 
-Once terraform installation is complete, terraform will output the SSH config necessary to connect to your cluster for each node as well as following public IPs :
-
-| Variable     | Description                                            |
-| ------------ | ------------------------------------------------------ |
-| `bastion_ip` | Bastion IP for OS and Docker swarm management          |
-| `lb_ip`      | Load Balancer IP to use for any external public access |
-| `lb_id`      | Load Balancer ID to use for attaching any services     |
+Once terraform installation is complete, terraform will output the SSH config necessary to connect to your cluster for each node.
 
 Copy the SSH config to your own SSH config, default to `~/.ssh/config`. After few minutes, you can use `ssh <cluster_name>` in order to log in to your main manager node. For other nodes, the first manager node will be used as a bastion for direct access to other nodes, so use `ssh <cluster_name>-worker-01` to directly access to your *worker-01* node.
 
