@@ -115,13 +115,6 @@ Contrary to Kubernetes which is really suited for a specific kind of topology (H
 
 ### Docker compose
 
-```tf
-# ...
-managers_count = 1
-workers_count  = 0
-# ...
-```
-
 ```mermaid
 flowchart TD
 client((Client))
@@ -153,13 +146,6 @@ Cons :
 * Server exposed to public internet
 
 ### 1 manager + X workers
-
-```tf
-# ...
-managers_count = 1
-workers_count  = 2
-# ...
-```
 
 ```mermaid
 flowchart TD
@@ -195,14 +181,6 @@ Cons :
 * Cluster exposed to public internet
 
 ### X managers + LB
-
-```tf
-# ...
-managers_count = 3
-workers_count  = 0
-lb_target = "manager"
-# ...
-```
 
 ```mermaid
 flowchart TD
@@ -246,14 +224,6 @@ Cons :
 * Risk of unresponsive swarm cluster if high load
 
 ### 1 manager + X workers + LB
-
-```tf
-# ...
-managers_count = 1
-workers_count  = 2
-lb_target = "worker"
-# ...
-```
 
 ```mermaid
 flowchart TD
@@ -299,14 +269,6 @@ Cons :
 * If more than 1 manager, you way prefer next topology, which moves Traefik to managers.
 
 ### X managers + Y workers + LB
-
-```tf
-# ...
-managers_count = 3
-workers_count  = 3
-lb_target = "manager"
-# ...
-```
 
 ```mermaid
 flowchart TD

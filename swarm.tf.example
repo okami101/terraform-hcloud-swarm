@@ -57,9 +57,25 @@ module "hcloud_swarm" {
   # Use an odd number
   managers_count       = 1
 
-  # Swarm workers configuration
-  workers_server_type = "cx21"
-  workers_count       = 2
+  # Swarm worker pools configuration
+  worker_nodepools = [
+    {
+      # Will define the final hostname, aka <cluster_name>-worker-01, etc.
+      name              = "worker"
+      server_type       = "cx21"
+      # You can use next optional attribute to define the range private IP index for the nodepool. It allows to move items in the list without breaking the IP range.
+      private_ip_index  = 0
+      # The number of nodes in this pool. The main parameter for autoscaling.
+      count             = 2
+    },
+    {
+      # Here is an example of a nodepool with a different server type dedicated for storage.
+      name              = "storage"
+      server_type       = "cx31"
+      private_ip_index  = 1
+      count             = 1
+    }
+  ]
 }
 
 output "ssh_config" {

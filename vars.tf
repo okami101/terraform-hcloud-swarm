@@ -76,12 +76,12 @@ variable "managers_count" {
   description = "Number of swarm managers"
 }
 
-variable "workers_server_type" {
-  type        = string
-  description = "Type of server for the swarm workers"
-}
-
-variable "workers_count" {
-  type        = number
-  description = "Number of swarm workers"
+variable "worker_nodepools" {
+  description = "List of all additional worker types to create for swarm cluster. Each type is identified by specific role and can have a different number of instances."
+  type = list(object({
+    name             = string
+    server_type      = string
+    private_ip_index = optional(number)
+    count            = number
+  }))
 }

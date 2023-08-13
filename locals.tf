@@ -8,14 +8,16 @@ locals {
         ip          = "10.0.0.${i + 2}"
       }
     ],
-    [
-      for i in range(var.workers_count) : {
-        name        = "worker-${format("%02d", i + 1)}"
-        role        = "worker"
-        server_type = var.workers_server_type
-        ip          = "10.0.1.${i + 1}"
-      }
-    ]
+    flatten([
+      for i, s in var.worker_nodepools : [
+        for j in range(s.count) : {
+          name        = "${s.name}-${format("%02d", j + 1)}"
+          role        = s.name
+          server_type = s.server_type
+          ip          = "10.0.${coalesce(s.private_ip_index, i) + 1}.${j + 1}"
+        }
+      ]
+    ])
   )
   bastion_server_name = "manager-01"
   bastion_server      = one([for s in local.servers : s if s.name == local.bastion_server_name])
