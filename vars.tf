@@ -64,12 +64,13 @@ variable "my_public_ssh_keys" {
 }
 
 variable "my_ip_addresses" {
-  type = list(string)
+  description = "Your public IP addresses for port whitelist via the Hetzner firewall configuration"
+  type        = list(string)
+  sensitive   = true
   default = [
     "0.0.0.0/0",
     "::/0"
   ]
-  description = "Your public IP addresses for port whitelist via the Hetzner firewall configuration"
 }
 
 variable "managers" {
