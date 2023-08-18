@@ -12,18 +12,11 @@ Check [K3S provider](https://github.com/okami101/terraform-hcloud-k3s) for a ful
 
 ### Networking and firewall
 
-All nodes including LB will be linked with a proper private network as well as **solid firewall protection**. For admin management, only the 1st main manager (bastion) node will have open port only for SSH (configurable), with **IP whitelist** support. Other internal nodes will be accessed by SSH Jump.
+All nodes will be linked with a proper private network as well as **solid firewall protection**. For admin management, only the managers will have open port for SSH (configurable), with **IP whitelist** support. Other internal nodes will be accessed by SSH Jump.
 
 ### Load Balancer
 
-Hetzner Load Balancer can be used for any external public access to your cluster. Note as this functionality is not directly included in this provider in order to allow maximum flexibility. Check `lb.tf.example` for complete example.
-
-You may have 2 options for LB :
-
-* Put it front of **managers**, so you need at least 3 managers for HA support (odd number mandatory for quorum)
-* Put it front of **workers**, so you need at least 2 workers for HA support. In this case, 1 single manager is required which is the far HA cheaper option.
-
-Note that if you use the worker option, and if you use Traefik as proxy for route detection, you **MUST** configure it for using the **manager docker API endpoint**, otherwise it will not be able to detect newly added services. You can use **Socat** as simple socket proxy for this purpose.
+Hetzner Load Balancer can be used for any external public access to your cluster. Simply set `lb_type` for a specific nodepool in order to create dedicated LB. Then directly use `hcloud_load_balancer_service` for enabling any services (mostly HTTP / HTTPS), in order to allow maximum flexibility. Check [swarm config](swarm.tf.example) for complete example.
 
 ### OS management
 

@@ -52,10 +52,15 @@ module "hcloud_swarm" {
   # Put your fixed public ip here, heavily recommended for protecting ssh and kube server api port access on bastion server, default to any.
   my_ip_addresses = ["0.0.0.0/0", "::/0"]
 
-  # Swarm managers configuration
-  managers_server_type = "cx21"
-  # Use an odd number
-  managers_count       = 1
+  managers = {
+    # Swarm managers configuration
+    server_type = "cx21"
+    # Use an odd number
+    count       = 1
+    # When HA mode, associate managers to a dedicated load balancer
+    # Optional attribute, remove it to use manager ips directly
+    lb_type     = "lb11"
+  }
 
   # Swarm worker pools configuration
   worker_nodepools = [
@@ -67,6 +72,8 @@ module "hcloud_swarm" {
       private_ip_index  = 0
       # The number of nodes in this pool. The main parameter for autoscaling.
       count             = 2
+      # Associate nodepool to a dedicated load balancer (optional)
+      lb_type           = "lb11"
     },
     {
       # Here is an example of a nodepool with a different server type dedicated for storage.
@@ -76,6 +83,13 @@ module "hcloud_swarm" {
       count             = 1
     }
   ]
+}
+
+resource "hcloud_load_balancer_service" "http_service" {
+  load_balancer_id = module.hcloud_swarm.lb_ids.worker
+  protocol         = "tcp"
+  listen_port      = 80
+  destination_port = 80
 }
 
 output "ssh_config" {

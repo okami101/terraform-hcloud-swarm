@@ -10,6 +10,12 @@ variable "server_location" {
   description = "The default location where to create hcloud resources"
 }
 
+variable "network_zone" {
+  description = "The network zone where to attach hcloud resources"
+  type        = string
+  default     = "eu-central"
+}
+
 variable "server_timezone" {
   type        = string
   default     = null
@@ -66,14 +72,13 @@ variable "my_ip_addresses" {
   description = "Your public IP addresses for port whitelist via the Hetzner firewall configuration"
 }
 
-variable "managers_server_type" {
-  type        = string
+variable "managers" {
+  type = object({
+    server_type = string
+    count       = number
+    lb_type     = optional(string)
+  })
   description = "Type of server for the swarm manager"
-}
-
-variable "managers_count" {
-  type        = number
-  description = "Number of swarm managers"
 }
 
 variable "worker_nodepools" {
@@ -83,5 +88,8 @@ variable "worker_nodepools" {
     server_type      = string
     private_ip_index = optional(number)
     count            = number
+    lb_type          = optional(string)
+    volume_size      = optional(number)
+    volume_format    = optional(string)
   }))
 }
