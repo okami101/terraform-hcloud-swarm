@@ -4,12 +4,6 @@ variable "server_image" {
   description = "The default OS image to use for the servers"
 }
 
-variable "server_location" {
-  type        = string
-  default     = "nbg1"
-  description = "The default location where to create hcloud resources"
-}
-
 variable "network_zone" {
   description = "The network zone where to attach hcloud resources"
   type        = string
@@ -54,6 +48,7 @@ variable "cluster_user" {
 
 variable "my_ssh_key_names" {
   description = "List of hcloud SSH key names that will be used to access the servers"
+  default     = []
   type        = list(string)
 }
 
@@ -76,6 +71,7 @@ variable "my_ip_addresses" {
 variable "managers" {
   type = object({
     server_type = string
+    location    = string
     count       = number
     lb_type     = optional(string)
   })
@@ -87,6 +83,7 @@ variable "worker_nodepools" {
   type = list(object({
     name             = string
     server_type      = string
+    location         = string
     private_ip_index = optional(number)
     count            = number
     lb_type          = optional(string)

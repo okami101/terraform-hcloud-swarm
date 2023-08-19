@@ -55,6 +55,7 @@ module "hcloud_swarm" {
   managers = {
     # Swarm managers configuration
     server_type = "cx21"
+    location    = "nbg1"
     # Use an odd number
     count       = 1
     # When HA mode, associate managers to a dedicated load balancer
@@ -68,6 +69,7 @@ module "hcloud_swarm" {
       # Will define the final hostname, aka <cluster_name>-worker-01, etc.
       name              = "worker"
       server_type       = "cx21"
+      location          = "nbg1"
       # You can use next optional attribute to define the range private IP index for the nodepool. It allows to move items in the list without breaking the IP range.
       private_ip_index  = 0
       # The number of nodes in this pool. The main parameter for autoscaling.

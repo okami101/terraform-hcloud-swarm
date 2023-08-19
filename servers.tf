@@ -2,8 +2,8 @@ resource "hcloud_server" "servers" {
   for_each    = { for i, s in local.servers : s.name => s }
   name        = "${var.cluster_name}-${each.value.name}"
   image       = var.server_image
-  location    = var.server_location
   server_type = each.value.server_type
+  location    = each.value.location
   firewall_ids = concat(
     [hcloud_firewall.firewall_private.id],
     each.value.role == "manager" ? [hcloud_firewall.firewall_managers.id] : []

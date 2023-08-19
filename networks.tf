@@ -28,7 +28,7 @@ resource "hcloud_load_balancer" "lbs" {
   for_each           = { for l in local.load_balancers : l.name => l }
   name               = "${var.cluster_name}-${each.key}"
   load_balancer_type = each.value.type
-  location           = var.server_location
+  location           = each.value.location
 }
 
 resource "hcloud_load_balancer_network" "lb_networks" {

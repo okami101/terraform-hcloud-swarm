@@ -5,6 +5,7 @@ locals {
         name        = "manager-${format("%02d", i + 1)}"
         role        = "manager"
         server_type = var.managers.server_type
+        location    = var.managers.location
         ip          = "10.0.0.${i + 2}"
         lb_type     = var.managers.lb_type
         volume_size = 0
@@ -16,6 +17,7 @@ locals {
           name          = "${s.name}-${format("%02d", j + 1)}"
           role          = s.name
           server_type   = s.server_type
+          location      = s.location
           ip            = "10.0.${coalesce(s.private_ip_index, i) + 1}.${j + 1}"
           lb_type       = s.lb_type
           volume_size   = s.volume_size != null ? s.volume_size : 0
@@ -26,15 +28,17 @@ locals {
   )
   load_balancers = concat(
     var.managers.lb_type != null ? [{
-      name = "manager"
-      type = var.managers.lb_type
-      ip   = "10.0.0.100"
+      name     = "manager"
+      type     = var.managers.lb_type
+      location = var.managers.location
+      ip       = "10.0.0.100"
     }] : [],
     [
       for i, s in var.worker_nodepools : {
-        name = s.name
-        type = s.lb_type
-        ip   = "10.0.${coalesce(s.private_ip_index, i) + 1}.100"
+        name     = s.name
+        type     = s.lb_type
+        location = s.location
+        ip       = "10.0.${coalesce(s.private_ip_index, i) + 1}.100"
       } if s.lb_type != null
     ]
   )
