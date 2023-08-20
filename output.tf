@@ -1,28 +1,28 @@
-output "network_id" {
-  value       = hcloud_network.network.id
-  description = "ID of the private firewall"
+output "network" {
+  value       = hcloud_network.network
+  description = "Private network"
 }
 
 
-output "firewall_private_id" {
-  value       = hcloud_firewall.firewall_private.id
-  description = "ID of the private firewall, allowing attaching to any custom servers"
+output "firewall_private" {
+  value       = hcloud_firewall.firewall_private
+  description = "Private firewall, allowing attaching to any custom servers"
 }
 
-output "lb_ids" {
-  value       = { for i, lb in hcloud_load_balancer.lbs : i => lb.id }
-  description = "Hetzner Identifier of load balancers, use them to configure services"
+output "lbs" {
+  value       = hcloud_load_balancer.lbs
+  description = "Hetzner load balancers, use them to configure services"
 }
 
 
-output "manager_ids" {
-  value       = [for s in local.servers : hcloud_server.servers[s.name].id if s.role == "manager"]
-  description = "Hetzner Identifier of managers"
+output "managers" {
+  value       = [for s in local.servers : hcloud_server.servers[s.name] if s.role == "manager"]
+  description = "Managers"
 }
 
-output "worker_ids" {
-  value       = [for s in local.servers : hcloud_server.servers[s.name].id if s.role == "worker"]
-  description = "Hetzner Identifier of workers"
+output "workers" {
+  value       = [for s in local.servers : hcloud_server.servers[s.name] if s.role == "worker"]
+  description = "Workers"
 }
 
 output "ssh_config" {
