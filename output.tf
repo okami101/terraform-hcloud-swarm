@@ -4,8 +4,8 @@ output "network" {
 }
 
 
-output "firewall_private" {
-  value       = hcloud_firewall.firewall_private
+output "firewall_workers" {
+  value       = hcloud_firewall.firewall_workers
   description = "Private firewall, allowing attaching to any custom servers"
 }
 

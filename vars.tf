@@ -68,6 +68,12 @@ variable "my_ip_addresses" {
   ]
 }
 
+variable "allowed_inbound_ports" {
+  description = "Ports whitelist for workers via the Hetzner firewall configuration"
+  type        = list(number)
+  default     = []
+}
+
 variable "managers" {
   type = object({
     server_type = string
