@@ -88,7 +88,7 @@ module "hcloud_swarm" {
 }
 
 resource "hcloud_load_balancer_service" "http_service" {
-  load_balancer_id = module.hcloud_swarm.lb_ids.worker
+  load_balancer_id = module.hcloud_swarm.lbs.worker.id
   protocol         = "tcp"
   listen_port      = 80
   destination_port = 80

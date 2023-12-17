@@ -96,4 +96,5 @@ variable "worker_nodepools" {
     volume_size      = optional(number)
     volume_format    = optional(string)
   }))
+  default = []
 }
