@@ -26,6 +26,20 @@ locals {
       ]
     ])
   )
+  subnets = concat(
+    [
+      {
+        name = "manager"
+        ip   = "10.0.0.0/24"
+      }
+    ],
+    [
+      for i, s in var.worker_nodepools : {
+        name = s.name
+        ip   = "10.0.${coalesce(s.private_ip_index, i) + 1}.0/24"
+      }
+    ]
+  )
   load_balancers = concat(
     var.managers.lb_type != null ? [{
       name     = "manager"
