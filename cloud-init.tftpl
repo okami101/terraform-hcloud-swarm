@@ -19,16 +19,9 @@ package_upgrade: true
 package_reboot_if_required: true
 
 write_files:
-- content: |
-    {
-      "metrics-addr": "0.0.0.0:9323",
-      "default-network-opts": {
-        "overlay": {
-          "com.docker.network.driver.mtu": "1450"
-        }
-      }
-    }
-  path: /etc/docker/daemon.json
+- path: /etc/docker/daemon.json
+  encoding: b64
+  content: ${docker_config}
 
 packages:
 %{ for package in server_packages ~}

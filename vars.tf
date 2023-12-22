@@ -74,6 +74,12 @@ variable "allowed_inbound_ports" {
   default     = []
 }
 
+variable "docker_config" {
+  type        = any
+  default     = {}
+  description = "Custom docker configuration."
+}
+
 variable "managers" {
   type = object({
     server_type = string

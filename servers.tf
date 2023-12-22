@@ -24,6 +24,7 @@ resource "hcloud_server" "servers" {
     cluster_name    = var.cluster_name
     cluster_user    = var.cluster_user
     public_ssh_keys = var.my_public_ssh_keys
+    docker_config   = base64encode(jsonencode(var.docker_config))
   })
 
   lifecycle {
