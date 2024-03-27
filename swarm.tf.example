@@ -30,7 +30,6 @@ module "hcloud_swarm" {
   source = "okami101/swarm/hcloud"
 
   server_image    = "ubuntu-22.04"
-  server_location = "nbg1"
   server_timezone = "Europe/Paris"
   server_locale   = "fr_FR.UTF-8"
   
