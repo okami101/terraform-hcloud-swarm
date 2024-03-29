@@ -54,3 +54,6 @@ runcmd:
 %{ if is_bastion ~}
   - docker swarm init --advertise-addr ${bastion_ip}
 %{ endif ~}
+%{ if install_loki_driver ~}
+  - docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+%{ endif ~}

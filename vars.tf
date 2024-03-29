@@ -104,3 +104,9 @@ variable "worker_nodepools" {
   }))
   default = []
 }
+
+variable "install_loki_driver" {
+  description = "Install loki driver for docker"
+  type        = bool
+  default     = false
+}

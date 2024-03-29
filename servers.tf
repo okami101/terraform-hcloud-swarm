@@ -14,17 +14,18 @@ resource "hcloud_server" "servers" {
     hcloud_network_subnet.network_subnet
   ]
   user_data = templatefile("${path.module}/cloud-init.tftpl", {
-    server_timezone = var.server_timezone
-    server_locale   = var.server_locale
-    server_packages = var.server_packages
-    ssh_port        = var.ssh_port
-    minion_id       = each.value.name
-    bastion_ip      = local.bastion_server.ip
-    is_bastion      = each.value.name == local.bastion_server_name
-    cluster_name    = var.cluster_name
-    cluster_user    = var.cluster_user
-    public_ssh_keys = var.my_public_ssh_keys
-    docker_config   = base64encode(jsonencode(var.docker_config))
+    server_timezone     = var.server_timezone
+    server_locale       = var.server_locale
+    server_packages     = var.server_packages
+    ssh_port            = var.ssh_port
+    minion_id           = each.value.name
+    bastion_ip          = local.bastion_server.ip
+    is_bastion          = each.value.name == local.bastion_server_name
+    cluster_name        = var.cluster_name
+    cluster_user        = var.cluster_user
+    install_loki_driver = var.install_loki_driver
+    public_ssh_keys     = var.my_public_ssh_keys
+    docker_config       = base64encode(jsonencode(var.docker_config))
   })
 
   lifecycle {
