@@ -4,9 +4,9 @@ Host ${cluster_name}
     Port ${ssh_port}
 
 %{ for s in servers ~}
-Host ${cluster_name}-${s.name}
-    HostName ${s.ip}
-    HostKeyAlias ${cluster_name}-${s.name}
+Host ${cluster_name}-${s.server_name}
+    HostName ${s.private_ipv4}
+    HostKeyAlias ${cluster_name}-${s.server_name}
     User ${cluster_user}
     Port ${ssh_port}
     ProxyJump ${cluster_name}

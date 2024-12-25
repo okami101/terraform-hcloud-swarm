@@ -1,36 +1,26 @@
 resource "hcloud_server" "servers" {
-  for_each    = { for i, s in local.servers : s.name => s }
-  name        = "${var.cluster_name}-${each.value.name}"
+  for_each    = { for s in local.servers : s.server_name => s }
+  name        = "${var.cluster_name}-${each.value.server_name}"
   image       = var.server_image
   server_type = each.value.server_type
   location    = each.value.location
-  firewall_ids = each.value.role == "manager" ? [
-    hcloud_firewall.firewall_managers.id
+  firewall_ids = local.bastion_name == each.value.server_name ? [
+    hcloud_firewall.ssh.id,
+    hcloud_firewall.swarm[each.value.name].id
     ] : [
-    hcloud_firewall.firewall_workers.id
+    hcloud_firewall.swarm[each.value.name].id
   ]
-  ssh_keys = var.my_ssh_key_names
+  ssh_keys = var.hcloud_ssh_keys
   depends_on = [
-    hcloud_network_subnet.network_subnet
+    hcloud_network_subnet.node
   ]
-  user_data = templatefile("${path.module}/cloud-init.tftpl", {
-    server_timezone     = var.server_timezone
-    server_locale       = var.server_locale
-    server_packages     = var.server_packages
-    ssh_port            = var.ssh_port
-    minion_id           = each.value.name
-    bastion_ip          = local.bastion_server.ip
-    is_bastion          = each.value.name == local.bastion_server_name
-    cluster_name        = var.cluster_name
-    cluster_user        = var.cluster_user
-    install_loki_driver = var.install_loki_driver
-    public_ssh_keys     = var.my_public_ssh_keys
-    docker_config       = base64encode(jsonencode(var.docker_config))
-  })
+  user_data = <<-EOT
+#cloud-config
+${yamlencode(local.cloud_init)}
+EOT
 
   lifecycle {
     ignore_changes = [
-      firewall_ids,
       user_data,
       ssh_keys,
     ]
@@ -38,17 +28,8 @@ resource "hcloud_server" "servers" {
 }
 
 resource "hcloud_server_network" "servers" {
-  for_each   = { for i, s in local.servers : s.name => s }
-  server_id  = hcloud_server.servers[each.value.name].id
-  network_id = hcloud_network.network.id
-  ip         = each.value.ip
-}
-
-resource "hcloud_volume" "volumes" {
-  for_each  = { for i, s in local.servers : s.name => s if s.volume_size >= 10 }
-  name      = "${var.cluster_name}-${each.value.name}"
-  size      = each.value.volume_size
-  server_id = hcloud_server.servers[each.key].id
-  automount = true
-  format    = each.value.volume_format != null ? each.value.volume_format : "ext4"
+  for_each   = { for s in local.servers : s.server_name => s }
+  server_id  = hcloud_server.servers[each.value.server_name].id
+  network_id = hcloud_network.swarm.id
+  ip         = each.value.private_ipv4
 }

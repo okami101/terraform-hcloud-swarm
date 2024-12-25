@@ -1,3 +1,9 @@
+variable "network_ipv4_cidr" {
+  description = "The main network cidr that all subnets will be created upon."
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
 variable "server_image" {
   type        = string
   default     = "ubuntu-22.04"
@@ -46,8 +52,8 @@ variable "cluster_user" {
   description = "The default non-root user (UID=1000) that will be used to access the servers"
 }
 
-variable "my_ssh_key_names" {
-  description = "List of hcloud SSH key names that will be used to access the servers"
+variable "hcloud_ssh_keys" {
+  description = "List of hcloud SSH keys that will be used to access the servers"
   default     = []
   type        = list(string)
 }
@@ -56,6 +62,7 @@ variable "my_public_ssh_keys" {
   description = "Your public SSH keys that will be used to access the servers"
   type        = list(string)
   sensitive   = true
+  default     = []
 }
 
 variable "my_ip_addresses" {
@@ -68,45 +75,22 @@ variable "my_ip_addresses" {
   ]
 }
 
-variable "allowed_inbound_ports" {
-  description = "Ports whitelist for workers via the Hetzner firewall configuration"
-  type        = list(number)
-  default     = []
-}
-
 variable "docker_config" {
   type        = any
   default     = {}
   description = "Custom docker configuration."
 }
 
-variable "managers" {
-  type = object({
+variable "nodes" {
+  description = "List of all nodes types to create for swarm cluster. Each type is identified by specific role and can have a different number of instances."
+  type = list(object({
+    name        = string
+    role        = string
     server_type = string
     location    = string
     count       = number
+    ports       = optional(list(string))
     lb_type     = optional(string)
-  })
-  description = "Type of server for the swarm manager"
-}
-
-variable "worker_nodepools" {
-  description = "List of all additional worker types to create for swarm cluster. Each type is identified by specific role and can have a different number of instances."
-  type = list(object({
-    name             = string
-    server_type      = string
-    location         = string
-    private_ip_index = optional(number)
-    count            = number
-    lb_type          = optional(string)
-    volume_size      = optional(number)
-    volume_format    = optional(string)
   }))
   default = []
-}
-
-variable "install_loki_driver" {
-  description = "Install loki driver for docker"
-  type        = bool
-  default     = false
 }

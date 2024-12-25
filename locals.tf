@@ -1,62 +1,73 @@
 locals {
-  servers = concat(
-    [
-      for i in range(var.managers.count) : {
-        name        = "manager-${format("%02d", i + 1)}"
-        role        = "manager"
-        server_type = var.managers.server_type
-        location    = var.managers.location
-        ip          = "10.0.0.${i + 2}"
-        lb_type     = var.managers.lb_type
-        volume_size = 0
+  bastion_name = local.servers[0].server_name
+  servers = flatten([
+    for s in var.nodes : [
+      for j in range(s.count) : {
+        name        = s.name
+        server_name = "${s.name}-${format("%02d", j + 1)}"
+        role        = s.role
+        server_type = s.server_type
+        location    = s.location
+        private_ipv4 = cidrhost(
+          hcloud_network_subnet.node[[
+            for i, v in var.nodes : i if v.name == s.name][0]
+        ].ip_range, j + 101)
+        lb_type = s.lb_type
       }
-    ],
-    flatten([
-      for i, s in var.worker_nodepools : [
-        for j in range(s.count) : {
-          name          = "${s.name}-${format("%02d", j + 1)}"
-          role          = s.name
-          server_type   = s.server_type
-          location      = s.location
-          ip            = "10.0.${coalesce(s.private_ip_index, i) + 1}.${j + 1}"
-          lb_type       = s.lb_type
-          volume_size   = s.volume_size != null ? s.volume_size : 0
-          volume_format = s.volume_format != null ? s.volume_format : "ext4"
-        }
-      ]
-    ])
-  )
-  subnets = concat(
-    [
+    ]
+  ])
+  load_balancers = [
+    for s in var.nodes : {
+      name     = s.name
+      type     = s.lb_type
+      location = s.location
+      private_ipv4 = cidrhost(
+        hcloud_network_subnet.node[[
+          for i, v in var.nodes : i if v.name == s.name][0]
+      ].ip_range, 200)
+    } if s.lb_type != null
+  ]
+  firewalls = [
+    for s in var.nodes : {
+      name  = s.name
+      ports = s.ports != null ? s.ports : []
+    }
+  ]
+  cloud_init = {
+    users = [
       {
-        name = "manager"
-        ip   = "10.0.0.0/24"
+        name                = var.cluster_user
+        uid                 = 1000
+        shell               = "/bin/bash"
+        sudo                = "ALL=(ALL) NOPASSWD:ALL"
+        groups              = ["adm", "sudo", "docker"]
+        ssh_authorized_keys = var.my_public_ssh_keys
       }
     ],
-    [
-      for i, s in var.worker_nodepools : {
-        name = s.name
-        ip   = "10.0.${coalesce(s.private_ip_index, i) + 1}.0/24"
-      }
+    package_update             = true
+    package_upgrade            = true
+    package_reboot_if_required = true
+    locale                     = var.server_locale
+    timezone                   = var.server_timezone
+    packages                   = var.server_packages
+    write_files = [
+      {
+        path        = "/etc/ssh/sshd_config.d/99-custom.conf"
+        permissions = "0644"
+        content     = <<-EOT
+Port ${var.ssh_port}
+PasswordAuthentication no
+EOT
+      },
+      {
+        path        = "/etc/docker/daemon.json"
+        permissions = "0644"
+        content     = jsonencode(var.docker_config)
+      },
     ]
-  )
-  load_balancers = concat(
-    var.managers.lb_type != null ? [{
-      name     = "manager"
-      type     = var.managers.lb_type
-      location = var.managers.location
-      ip       = "10.0.0.100"
-    }] : [],
-    [
-      for i, s in var.worker_nodepools : {
-        name     = s.name
-        type     = s.lb_type
-        location = s.location
-        ip       = "10.0.${coalesce(s.private_ip_index, i) + 1}.100"
-      } if s.lb_type != null
+    runcmd = [
+      "systemctl restart sshd",
+      "curl -fsSL https://get.docker.com | sh",
     ]
-  )
-  bastion_server_name = "manager-01"
-  bastion_server      = one([for s in local.servers : s if s.name == local.bastion_server_name])
-  bastion_ip          = hcloud_server.servers[local.bastion_server_name].ipv4_address
+  }
 }
