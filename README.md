@@ -118,13 +118,13 @@ app-02 --> DB
 Pros :
 
 * The cheapest and dead simplest solution
-* Blue green deployment always possible thanks to Docker and Traefik combination
-* No swarm needed, use directly docker-compose
+* No swarm involved, so no cluster state headaches, use directly docker-compose
 
 Cons :
 
 * No HA, mandatory downtime for maintenance
 * No horizontal scalability, only vertical
+* No zero downtime achievable without custom scripts
 * All resources constrained to 1 single node, high SRP violation
 * Need SSL management for Traefik
 * Server exposed to public internet
