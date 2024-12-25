@@ -27,7 +27,7 @@ module "swarm-hetzner" {
     hcloud = hcloud
   }
 
-  source = "okami101/swarm/hcloud"
+  source = "github.com/okami101/terraform-hcloud-swarm"
 
   server_image    = "ubuntu-24.04"
   server_timezone = "Europe/Paris"
