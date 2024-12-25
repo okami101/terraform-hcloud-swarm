@@ -82,10 +82,9 @@ variable "docker_config" {
 }
 
 variable "nodes" {
-  description = "List of all nodes types to create for swarm cluster. Each type is identified by specific role and can have a different number of instances."
+  description = "List of all nodes types to create for swarm cluster. Each type can have a different number of instances."
   type = list(object({
     name        = string
-    role        = string
     server_type = string
     location    = string
     count       = number

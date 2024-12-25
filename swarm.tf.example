@@ -1,0 +1,79 @@
+variable "hcloud_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "my_public_ssh_keys" {
+  type      = list(string)
+  sensitive = true
+}
+
+provider "hcloud" {
+  token = var.hcloud_token
+}
+
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    hcloud = {
+      source  = "hetznercloud/hcloud"
+      version = ">= 1.43.0"
+    }
+  }
+}
+
+module "swarm-hetzner" {
+  providers = {
+    hcloud = hcloud
+  }
+
+  source = "okami101/swarm/hcloud"
+
+  server_image    = "ubuntu-24.04"
+  server_timezone = "Europe/Paris"
+  server_locale   = "fr_FR.UTF-8"
+  server_packages = ["nfs-common"]
+
+  ssh_port = 2222
+
+  hcloud_ssh_keys = ["home"]
+
+  cluster_name       = "okami"
+  cluster_user       = "swarm"
+  my_public_ssh_keys = var.my_public_ssh_keys
+
+  docker_config = {
+    metrics-addr = "0.0.0.0:9323"
+    default-network-opts = {
+      overlay = {
+        "com.docker.network.driver.mtu" = "1450"
+      }
+    }
+  }
+
+  nodes = [
+    {
+      name        = "manager"
+      server_type = "ccx13"
+      location    = "nbg1"
+      count       = 1
+      ports       = ["80", "443"]
+    },
+    {
+      name        = "worker"
+      server_type = "ccx13"
+      location    = "nbg1"
+      count       = 2
+    },
+    {
+      name        = "storage"
+      server_type = "ccx13"
+      location    = "nbg1"
+      count       = 1
+    }
+  ]
+}
+
+output "ssh_config" {
+  value = module.swarm-hetzner.ssh_config
+}

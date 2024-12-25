@@ -5,7 +5,6 @@ locals {
       for j in range(s.count) : {
         name        = s.name
         server_name = "${s.name}-${format("%02d", j + 1)}"
-        role        = s.role
         server_type = s.server_type
         location    = s.location
         private_ipv4 = cidrhost(

@@ -8,7 +8,7 @@ This opinionated Terraform template will generate a ready-to-go cloud infrastruc
 
 Additional managers and workers can be easily added thanks to terraform variables, even after initial setup for **easy upscaling**. Feel free to fork this project in order to adapt for your custom needs.
 
-Check [K3S provider](https://github.com/okami101/terraform-hcloud-k3s) for a full-featured, but more resource consuming, orchestrator based on Kubernetes distribution.
+Check [K3S provider](https://github.com/okami101/terraform-hcloud-microos-k3s) for a full-featured, but more resource consuming, orchestrator based on Kubernetes distribution.
 
 ### Networking and firewall
 
@@ -19,8 +19,6 @@ All nodes will be linked with a proper private network as well as **solid firewa
 Hetzner Load Balancer can be used for any external public access to your cluster. Simply set `lb_type` for a specific nodepool in order to create dedicated LB. Then directly use `hcloud_load_balancer_service` for enabling any services (mostly HTTP / HTTPS), in order to allow maximum flexibility. Check [swarm config](swarm.tf.example) for complete example.
 
 ### OS management
-
-This Terraform template includes **[Salt Project](https://docs.saltproject.io)** as well for easy global OS management of the cluster through ssh, perfect for upgrades in one single time !
 
 ## ✅ Requirements
 
@@ -63,20 +61,15 @@ Once terraform installation is complete, terraform will output the SSH config ne
 
 Copy the SSH config to your own SSH config, default to `~/.ssh/config`. After few minutes, you can use `ssh <cluster_name>` in order to log in to your main manager node. For other nodes, the first manager node will be used as a bastion for direct access to other nodes, so use `ssh <cluster_name>-worker-01` to directly access to your *worker-01* node.
 
-### Salt
-
-Once logged to your bastion, don't forget to active *Salt*, just type `sudo salt-key -A` in order to accept all discovered minions. You are now ready to use any `salt` commands for global OS management, as `sudo salt '*' pkg.upgrade` for global OS upgrade in one single time.
-
-> If salt-key command is not existing, wait few minutes as it's necessary that cloud-init has finished his job.
-
 ### Docker Swarm
 
 #### Join nodes
 
-By default, and because there is sadly no possibility to set a custom token for swarm, you must join all managers and workers node in order to have fully ready cluster. When logged to bastion, use :
+You must join all managers and workers node manually in order to have fully ready cluster. When logged to bastion, use :
 
-* `docker swarm join-token worker` to print command to launch in every worker nodes.
+* `docker swarm init --advertise-addr <private_ipv4>` on your first manager to initialize swarm.
 * `docker swarm join-token manager` to print command to launch in every manager nodes.
+* `docker swarm join-token worker` to print command to launch in every worker nodes.
 
 Use `docker node ls` to check that all nodes are correctly joined to the cluster.
 
@@ -98,13 +91,11 @@ docker node ls
 
 You can easily add or remove nodes by changing the `count` variable of each worker or manager. Then use `terraform apply` to apply the changes.
 
-* When adding, the new manager or worker node will be automatically created, but you still need to join it to the cluster by using above related command. Don't also forget to accept the new minion with `sudo salt-key -A`.
+* When adding, the new manager or worker node will be automatically created, but you still need to join it to the cluster by using above related command.
 
 ## Topologies
 
-Contrary to Kubernetes which is really suited for a specific kind of topology (HA in front of workers), Docker is highly flexible and give you many ways to build your cluster for any needs. Here are some examples of topologies you can use with this Terraform template.
-
-> I'm using here Traefik (not included) which is the perfect reverse proxy for route detection through Docker API.
+Contrary to Kubernetes which is really suited for a specific kind of topology (HA in front of workers), Docker can have more scenarios. Here are some examples of topologies you can use with this Terraform template.
 
 ### Docker compose
 

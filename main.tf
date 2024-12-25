@@ -63,7 +63,7 @@ resource "hcloud_load_balancer_network" "lb_networks" {
 resource "hcloud_load_balancer_target" "lb_targets" {
   for_each         = { for t in local.servers : t.server_name => t if t.lb_type != null }
   type             = "server"
-  load_balancer_id = hcloud_load_balancer.swarm[each.value.role].id
+  load_balancer_id = hcloud_load_balancer.swarm[each.value.name].id
   server_id        = hcloud_server.servers[each.key].id
   use_private_ip   = true
 
