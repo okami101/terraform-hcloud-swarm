@@ -40,7 +40,7 @@ module "swarm-hetzner" {
 
   cluster_name       = "okami"
   cluster_user       = "swarm"
-  my_public_ssh_keys = var.my_public_ssh_keys
+  cluster_user_public_ssh_keys = var.my_public_ssh_keys
 
   docker_config = {
     metrics-addr = "0.0.0.0:9323"

@@ -40,7 +40,7 @@ locals {
         shell               = "/bin/bash"
         sudo                = "ALL=(ALL) NOPASSWD:ALL"
         groups              = ["adm", "sudo", "docker"]
-        ssh_authorized_keys = var.my_public_ssh_keys
+        ssh_authorized_keys = var.cluster_user_public_ssh_keys
       }
     ],
     package_update             = true

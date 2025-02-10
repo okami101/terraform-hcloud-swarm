@@ -52,17 +52,17 @@ variable "cluster_user" {
   description = "The default non-root user (UID=1000) that will be used to access the servers"
 }
 
-variable "hcloud_ssh_keys" {
-  description = "List of hcloud SSH keys that will be used to access the servers"
-  default     = []
-  type        = list(string)
-}
-
-variable "my_public_ssh_keys" {
-  description = "Your public SSH keys that will be used to access the servers"
+variable "cluster_user_public_ssh_keys" {
+  description = "Your public SSH keys that will be used to access the cluster user on the servers"
   type        = list(string)
   sensitive   = true
   default     = []
+}
+
+variable "hcloud_ssh_keys" {
+  description = "List of names of hcloud SSH keys that already exist in the hetzner environment and will be used to access the server via the image default user like root"
+  default     = []
+  type        = list(string)
 }
 
 variable "my_ip_addresses" {
