@@ -31,7 +31,7 @@ module "swarm-hetzner" {
 
   server_image    = "ubuntu-24.04"
   server_timezone = "Europe/Paris"
-  server_locale   = "fr_FR.UTF-8"
+  server_locale   = "en_GB.UTF-8"
   server_packages = ["nfs-common"]
 
   ssh_port = 2222
