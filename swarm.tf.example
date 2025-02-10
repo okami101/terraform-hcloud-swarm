@@ -54,20 +54,20 @@ module "swarm-hetzner" {
   nodes = [
     {
       name        = "manager"
-      server_type = "ccx13"
+      server_type = "cx22"
       location    = "nbg1"
       count       = 1
       ports       = ["80", "443"]
     },
     {
       name        = "worker"
-      server_type = "ccx13"
+      server_type = "cx22"
       location    = "nbg1"
       count       = 2
     },
     {
       name        = "storage"
-      server_type = "ccx13"
+      server_type = "cx22"
       location    = "nbg1"
       count       = 1
     }
