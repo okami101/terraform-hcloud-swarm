@@ -36,8 +36,6 @@ module "swarm-hetzner" {
 
   ssh_port = 2222
 
-  hcloud_ssh_keys = ["home"]
-
   cluster_name       = "okami"
   cluster_user       = "swarm"
   cluster_user_public_ssh_keys = var.my_public_ssh_keys
