@@ -36,8 +36,8 @@ module "swarm-hetzner" {
 
   ssh_port = 2222
 
-  cluster_name       = "okami"
-  cluster_user       = "swarm"
+  cluster_name                 = "okami"
+  cluster_user                 = "swarm"
   cluster_user_public_ssh_keys = var.my_public_ssh_keys
 
   docker_config = {
