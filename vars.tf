@@ -90,6 +90,7 @@ variable "nodes" {
     count       = number
     ports       = optional(list(string))
     lb_type     = optional(string)
+    physical_placement = optional(string)
   }))
   default = []
 }

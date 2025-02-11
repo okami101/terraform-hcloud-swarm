@@ -32,6 +32,12 @@ locals {
       ports = s.ports != null ? s.ports : []
     }
   ]
+  placement_groups = [
+    for s in var.nodes : {
+      name  = s.name
+      type = s.physical_placement
+    } if s.physical_placement != null
+  ]
   cloud_init = {
     users = [
       {

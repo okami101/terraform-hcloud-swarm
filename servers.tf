@@ -12,12 +12,15 @@ resource "hcloud_server" "servers" {
   ]
   ssh_keys = var.hcloud_ssh_keys
   depends_on = [
-    hcloud_network_subnet.node
+    hcloud_network_subnet.node,
+    hcloud_placement_group.swarm
   ]
   user_data = <<-EOT
 #cloud-config
 ${yamlencode(local.cloud_init)}
 EOT
+
+  placement_group_id = contains(keys(hcloud_placement_group.swarm), each.value.name) ? hcloud_placement_group.swarm[each.value.name].id : null
 
   lifecycle {
     ignore_changes = [
