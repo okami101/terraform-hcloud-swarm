@@ -34,7 +34,7 @@ locals {
   ]
   placement_groups = [
     for s in var.nodes : {
-      name  = s.name
+      name = s.name
       type = s.physical_placement
     } if s.physical_placement != null
   ]

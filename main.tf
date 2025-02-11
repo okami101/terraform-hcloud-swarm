@@ -76,5 +76,5 @@ resource "hcloud_load_balancer_target" "lb_targets" {
 resource "hcloud_placement_group" "swarm" {
   for_each = { for pg in local.placement_groups : pg.name => pg }
   name     = "${var.cluster_name}-${each.value.name}"
-  type = each.value.type
+  type     = each.value.type
 }
