@@ -58,7 +58,7 @@ module "swarm-hetzner" {
       ports       = ["80", "443"]
       # Optionally add the nodes to a placement group which spread each node to a different physical server
       # You can add them later as well, but the nodes need to be stopped in order to do that
-      #physical_placement = "spread"
+      #placement_group = "spread"
     },
     {
       name        = "worker"

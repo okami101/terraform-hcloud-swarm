@@ -4,23 +4,25 @@ resource "hcloud_server" "servers" {
   image       = var.server_image
   server_type = each.value.server_type
   location    = each.value.location
+  ssh_keys    = var.hcloud_ssh_keys
+
   firewall_ids = local.bastion_name == each.value.server_name ? [
     hcloud_firewall.ssh.id,
     hcloud_firewall.swarm[each.value.name].id
     ] : [
     hcloud_firewall.swarm[each.value.name].id
   ]
-  ssh_keys = var.hcloud_ssh_keys
+  placement_group_id = contains(keys(hcloud_placement_group.swarm), each.value.name) ? hcloud_placement_group.swarm[each.value.name].id : null
+
   depends_on = [
     hcloud_network_subnet.node,
     hcloud_placement_group.swarm
   ]
+
   user_data = <<-EOT
 #cloud-config
 ${yamlencode(local.cloud_init)}
 EOT
-
-  placement_group_id = contains(keys(hcloud_placement_group.swarm), each.value.name) ? hcloud_placement_group.swarm[each.value.name].id : null
 
   lifecycle {
     ignore_changes = [
