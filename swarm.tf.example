@@ -31,16 +31,14 @@ module "swarm-hetzner" {
 
   server_image    = "ubuntu-24.04"
   server_timezone = "Europe/Paris"
-  server_locale   = "fr_FR.UTF-8"
+  server_locale   = "en_GB.UTF-8"
   server_packages = ["nfs-common"]
 
   ssh_port = 2222
 
-  hcloud_ssh_keys = ["home"]
-
-  cluster_name       = "okami"
-  cluster_user       = "swarm"
-  my_public_ssh_keys = var.my_public_ssh_keys
+  cluster_name                 = "okami"
+  cluster_user                 = "swarm"
+  cluster_user_public_ssh_keys = var.my_public_ssh_keys
 
   docker_config = {
     metrics-addr = "0.0.0.0:9323"
@@ -54,20 +52,20 @@ module "swarm-hetzner" {
   nodes = [
     {
       name        = "manager"
-      server_type = "ccx13"
+      server_type = "cx22"
       location    = "nbg1"
       count       = 1
       ports       = ["80", "443"]
     },
     {
       name        = "worker"
-      server_type = "ccx13"
+      server_type = "cx22"
       location    = "nbg1"
       count       = 2
     },
     {
       name        = "storage"
-      server_type = "ccx13"
+      server_type = "cx22"
       location    = "nbg1"
       count       = 1
     }
