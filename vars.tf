@@ -84,12 +84,13 @@ variable "docker_config" {
 variable "nodes" {
   description = "List of all nodes types to create for swarm cluster. Each type can have a different number of instances."
   type = list(object({
-    name        = string
-    server_type = string
-    location    = string
-    count       = number
-    ports       = optional(list(string))
-    lb_type     = optional(string)
+    name               = string
+    server_type        = string
+    location           = string
+    count              = number
+    ports              = optional(list(string))
+    lb_type            = optional(string)
+    physical_placement = optional(string)
   }))
   default = []
 }
