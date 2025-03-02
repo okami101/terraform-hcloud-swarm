@@ -66,8 +66,8 @@ EOT
       },
     ]
     runcmd = [
-      "systemctl restart sshd",
       "curl -fsSL https://get.docker.com | sh",
+      "systemctl restart sshd",
     ]
   }
 }
