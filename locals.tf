@@ -11,7 +11,8 @@ locals {
           hcloud_network_subnet.node[[
             for i, v in var.nodes : i if v.name == s.name][0]
         ].ip_range, j + 101)
-        lb_type = s.lb_type
+        lb_type            = s.lb_type
+        placement_group_id = s.placement_group != null ? hcloud_placement_group.swarm[s.placement_group].id : null
       }
     ]
   ])
@@ -31,12 +32,6 @@ locals {
       name  = s.name
       ports = s.ports != null ? s.ports : []
     }
-  ]
-  placement_groups = [
-    for s in var.nodes : {
-      name = s.name
-      type = s.placement_group
-    } if s.placement_group != null
   ]
   cloud_init = {
     users = [

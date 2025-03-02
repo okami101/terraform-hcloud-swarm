@@ -12,11 +12,10 @@ resource "hcloud_server" "servers" {
     ] : [
     hcloud_firewall.swarm[each.value.name].id
   ]
-  placement_group_id = contains(keys(hcloud_placement_group.swarm), each.value.name) ? hcloud_placement_group.swarm[each.value.name].id : null
+  placement_group_id = each.value.placement_group_id
 
   depends_on = [
-    hcloud_network_subnet.node,
-    hcloud_placement_group.swarm
+    hcloud_network_subnet.node
   ]
 
   user_data = <<-EOT
